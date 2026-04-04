@@ -1,9 +1,6 @@
-fastapi
-uvicorn
-tensorflow
-pillow
+flask
+flask-cors
+tensorflow-cpu
 numpy
-python-multipart
+pillow
 gunicorn
-uvloop
-httptools
