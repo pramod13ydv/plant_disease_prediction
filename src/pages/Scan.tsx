@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import {
   Camera, Image as ImageIcon, UploadCloud, X, Loader2,
-  Leaf, ShieldCheck, AlertTriangle, BrainCircuit, ChevronDown
+  ShieldCheck, AlertTriangle, BrainCircuit, ChevronDown
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
