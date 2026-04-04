@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import tensorflow as tf
 import numpy as np
@@ -6,10 +6,13 @@ from PIL import Image
 import io
 import os
 
-app = Flask(__name__)
-CORS(app) # Enable CORS for frontend connectivity
+# Get absolute path to the 'dist' directory (where React build lives)
+dist_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dist")
 
-# Load model (looking for model.h5 in root)
+app = Flask(__name__, static_folder=dist_path, static_url_path="/")
+CORS(app)
+
+# ── Model Configuration ────────────────────────────────────────
 MODEL_PATH = "model.h5"
 model = None
 
@@ -29,9 +32,18 @@ def preprocess(img):
     img = np.expand_dims(img, axis=0)
     return img
 
-@app.route('/')
-def home():
-    return "Plant Disease API is running 🚀"
+# ── Static File Serving (Render Production) ───────────────────
+# This serves the React website when you open your live link
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve(path):
+    if path != "" and os.path.exists(app.static_folder + "/" + path):
+        return send_from_directory(app.static_folder, path)
+    return send_from_directory(app.static_folder, "index.html")
+
+@app.route('/health')
+def health_check():
+    return "API and Frontend are active 🚀"
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -54,7 +66,7 @@ def predict():
     return jsonify({
         "prediction": result,
         "confidence": confidence,
-        "class": str(result) # Added class for frontend compatibility
+        "class": str(result)
     })
 
 if __name__ == "__main__":
